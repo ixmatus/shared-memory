@@ -1,15 +1,21 @@
+{ compiler ? "ghc844" }:
+
 let
 
   config   = { allowUnfree = true; };
   overlays = [
     (newPkgs: oldPkgs: rec {
 
-      haskellPackages = oldPkgs.haskellPackages.override {
-        overrides = haskellPackagesNew: haskellPackagesOld: {
-          shared-memory = haskellPackagesNew.callPackage ./default.nix { };
+      haskell = oldPkgs.haskell // {
+        packages = oldPkgs.haskell.packages // {
+          "${compiler}" = oldPkgs.haskell.packages."${compiler}".override {
+            overrides =
+              oldPkgs.haskell.lib.packageSourceOverrides {
+                "shared-memory" = newPkgs.haskellPackages.callCabal2nix "shared-memory" ./. { };
+              };
+          };
         };
       };
-
     })
   ];
 

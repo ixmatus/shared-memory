@@ -1,1 +1,1 @@
-(import ./release.nix).shared-memory.env
+(import ./release.nix { }).shared-memory.env
